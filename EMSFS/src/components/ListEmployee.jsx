@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { listEmployees } from '../services/EmployeeService'
+import { deleteEmployee, listEmployees } from '../services/EmployeeService'
 import { useNavigate } from 'react-router-dom'
 
 const ListEmployee = () => {
@@ -8,15 +8,30 @@ const ListEmployee = () => {
     const Navigator = useNavigate();
 
     useEffect(()=>{
-        listEmployees().then((Response)=>{
-            setEmployees(Response.data);
-        }).catch(error=>{
-            console.error(error);
-        })
+       getAllEmployees();
     },[])
 
+function getAllEmployees(){
+    listEmployees().then((Response)=>{
+        setEmployees(Response.data);
+    }).catch(error=>{
+        console.error(error);
+    })
+}  
+    
 function addNewEmployee (){
     Navigator('/add-employee')
+}
+function updateEmployee(id){
+    Navigator(`/update-employee/${id}`)
+}
+function removeEmployee(id){
+    console.log(id);
+    deleteEmployee(id).then((Response)=>{
+        getAllEmployees();
+    }).catch(error =>{
+        console.error(error);
+    })
 }
 
   return (
@@ -38,6 +53,9 @@ function addNewEmployee (){
                     <th>
                         email
                     </th>
+                    <th>
+                        Action
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -48,6 +66,16 @@ function addNewEmployee (){
                             <td>{employee.firstName}</td>
                             <td>{employee.lastName}</td>
                             <td>{employee.email}</td>
+                            <td>
+                                < button className='btn btn-info' onClick={()=> updateEmployee(employee.id)}>
+                                    Update
+                                </button>
+                                < button className='btn btn-danger' onClick={()=> removeEmployee(employee.id)}
+                                style={{marginLeft:'10px'}}
+                                >
+                                    Delete
+                                </button>
+                            </td>
                         </tr>
                     )   
                 }
